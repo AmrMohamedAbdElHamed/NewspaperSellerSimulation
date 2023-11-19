@@ -78,7 +78,6 @@
             this.dataGridView_SD.RowTemplate.Height = 24;
             this.dataGridView_SD.Size = new System.Drawing.Size(1748, 680);
             this.dataGridView_SD.TabIndex = 18;
-            this.dataGridView_SD.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_SD_CellContentClick);
             // 
             // button1
             // 
@@ -113,8 +112,7 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1748, 58);
             this.panel2.TabIndex = 20;
-            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
-            // 
+           // 
             // Column1
             // 
             this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;

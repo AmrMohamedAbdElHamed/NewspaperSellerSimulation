@@ -27,30 +27,23 @@ namespace NewspaperSellerSimulation
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+            dataGridView_SD.Rows.Clear();
             foreach (var item in system.SimulationTable)
             {
                 dataGridView_SD.Rows.Add(
-                    item.CustomerNumber,
-                    item.RandomInterArrival,
-                    item.InterArrival,
-                    item.ArrivalTime,
-                    item.RandomService,
-                    item.AssignedServer.ID,
-                    item.StartTime,
-                    item.ServiceTime,
-                    item.EndTime,
-                    item.TimeInQueue);
+                    item.DayNo.ToString(),
+                    item.RandomNewsDayType.ToString(),
+                    item.NewsDayType.ToString(),
+                    item.RandomDemand.ToString(),
+                    item.Demand.ToString(),
+                    item.SalesProfit.ToString(),
+                    item.LostProfit.ToString(),
+                    item.ScrapProfit.ToString(),
+                    item.DailyNetProfit.ToString()
+                    );
             }
         }
 
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void dataGridView_SD_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
+        
     }
 }

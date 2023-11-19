@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NewspaperSellerModels;
+using NewspaperSellerTesting;
+
 namespace NewspaperSellerSimulation
 {
     public partial class Form1 : Form
@@ -16,44 +19,48 @@ namespace NewspaperSellerSimulation
         SimulationSystem system;
         Form4 form4;
 
-
         public Form1()
         {
-            
+
             InitializeComponent();
-            form2 = new Form2( system);
+            form2 = new Form2(system);
         }
         private void button1_Click_1(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog=new OpenFileDialog(); 
+            OpenFileDialog openFileDialog = new OpenFileDialog();
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                textBox1_path.Text=openFileDialog.FileName;
+                textBox1_path.Text = openFileDialog.FileName;
             }
-            if (textBox1_path.Text.Length!=0 && textBox1_path.Text.Contains(".txt"))
+            if (textBox1_path.Text.Length != 0 && textBox1_path.Text.Contains(".txt"))
             {
-
-
                 system = new SimulationSystem(textBox1_path.Text);
                 dataGridView1.Rows.Clear();
                 dataGridView_ID.Rows.Clear();
                 dataGridView_SD.Rows.Clear();
-                dataGridView1.Rows.Add(system.NumberOfServers, system.StoppingNumber, system.StoppingCriteria.ToString(), system.SelectionMethod.ToString());
 
-
-                for (int i = 0; i < system.InterarrivalDistribution.Count; i++)
-                {
-
-                    dataGridView_ID.Rows.Add(system.InterarrivalDistribution[i].Time, system.InterarrivalDistribution[i].Probability);
-                }
-                foreach (var item in system.Servers)
-                {
-                    for (int i = 0; i < item.TimeDistribution.Count; i++)
-                    {
-                        dataGridView_SD.Rows.Add(item.TimeDistribution[i].Time, item.TimeDistribution[i].Probability);
-                    }
-                    dataGridView_SD.Rows.Add("--", "--");
+                dataGridView1.Rows.Add(system.NumOfNewspapers.ToString(),
+                system.NumOfRecords.ToString(),
+                system.PurchasePrice.ToString(),
+                system.ScrapPrice.ToString(),
+                system.SellingPrice.ToString());
+            foreach (var row in system.DayTypeDistributions)
+            {
+                dataGridView_ID.Rows.Add(row.DayType.ToString(),
+                    row.Probability.ToString(),
+                    row.CummProbability.ToString(),
+                    $"{row.MinRange}-{row.MaxRange}");
+            }
+            foreach (var row in system.DemandDistributions)
+            {
+                dataGridView_SD.Rows.Add(row.Demand.ToString(),
+                   row.DayTypeDistributions[0].Probability.ToString(),
+                    row.DayTypeDistributions[1].Probability.ToString(),
+                    row.DayTypeDistributions[2].Probability.ToString(),
+                     $"{row.DayTypeDistributions[0].MinRange}-{row.DayTypeDistributions[0].MaxRange}",
+                     $"{row.DayTypeDistributions[1].MinRange}-{row.DayTypeDistributions[1].MaxRange}",
+                     $"{row.DayTypeDistributions[2].MinRange}-{row.DayTypeDistributions[2].MaxRange}");
                 }
             }
             else
@@ -62,7 +69,7 @@ namespace NewspaperSellerSimulation
                 MessageBox.Show("Enter file path");
             }
         }
-        
+
         private void button2_Click(object sender, EventArgs e)
         {
             panel3.Visible = true;
@@ -71,41 +78,36 @@ namespace NewspaperSellerSimulation
         private void button3_Click(object sender, EventArgs e)
         {
 
-            form2 = new Form2( system);
+            form2 = new Form2(system);
             form2.Show();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            form3 = new Form3(system);
-            form3.Show();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-
             form4 = new Form4(system);
             form4.Show();
         }
 
-        private void panel3_Paint(object sender, PaintEventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
 
+            system = new SimulationSystem(Path.GetFullPath("../..") + "/TestCases/TestCase1.txt");
+            string testingResult = TestingManager.Test(system, Constants.FileNames.TestCase1);
+            MessageBox.Show(testingResult);
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void button6_Click(object sender, EventArgs e)
         {
-
+            system = new SimulationSystem(Path.GetFullPath("../..") + "/TestCases/TestCase2.txt");
+            string testingResult = TestingManager.Test(system, Constants.FileNames.TestCase2);
+            MessageBox.Show(testingResult);
         }
 
-        private void textBox1_path_TextChanged(object sender, EventArgs e)
+        private void button7_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+            system = new SimulationSystem(Path.GetFullPath("../..") + "/TestCases/TestCase3.txt");
+            string testingResult = TestingManager.Test(system, Constants.FileNames.TestCase3);
+            MessageBox.Show(testingResult);
         }
     }
 }
