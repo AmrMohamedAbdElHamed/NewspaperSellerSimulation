@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static NewspaperSellerModels.Enums;
 
 namespace NewspaperSellerModels
 {
@@ -15,7 +14,8 @@ namespace NewspaperSellerModels
             DayTypeDistributions = new List<DayTypeDistribution>();
             DemandDistributions = new List<DemandDistribution>();
             SimulationTable = new List<SimulationCase>();
-            PerformanceMeasures = new PerformanceMeasures(); 
+            PerformanceMeasures = new PerformanceMeasures();
+
         }
         ///////////// INPUTS /////////////
         public int NumOfNewspapers { get; set; }
@@ -31,8 +31,36 @@ namespace NewspaperSellerModels
         public List<SimulationCase> SimulationTable { get; set; }
         public PerformanceMeasures PerformanceMeasures { get; set; }
 
+        public void fillTable()
+        {
+            Random rand = new Random();
+            for (int i = 1; i < NumOfRecords + 1; i++)
+            {
+
+                SimulationCase simulationCase = new SimulationCase();
+                simulationCase.DayNo = 1;
+                simulationCase.RandomNewsDayType = rand.Next(1, 101);
+                simulationCase.NewsDayType = getDayType(simulationCase.RandomNewsDayType);
+                simulationCase.RandomDemand = rand.Next(1, 101);
+                simulationCase.Demand = getdemand(simulationCase.RandomDemand, simulationCase.NewsDayType);
+                simulationCase.SalesProfit = calcTotalSalesProfit(simulationCase.Demand);
+                simulationCase.DailyCost = calcTotalCost();
+
+                if (simulationCase.Demand > NumOfNewspapers)
+                {
+                    simulationCase.LostProfit = calcTotalLostProfit(simulationCase.Demand);
+
+                }
+                else if (simulationCase.Demand < NumOfNewspapers)
+                {
+                    simulationCase.ScrapProfit = calcTotalScrapProfit(simulationCase.Demand);
+                }
+                simulationCase.DailyNetProfit = calcDalyProfit(simulationCase.DailyCost,simulationCase.SalesProfit,simulationCase.LostProfit,simulationCase.ScrapProfit);
 
 
+            }
+            calcTotalNetProfit();
+        }
         public void ReadAndSplitSections(string filePath)
         {
             var data = File.ReadAllText(filePath);
@@ -82,7 +110,7 @@ namespace NewspaperSellerModels
             for (int i = 1; i < lines.Length; i++)
             {
                 var parts = lines[i].Split(',');
-                for(int j = 0; j < 3; j++)
+                for (int j = 0; j < 3; j++)
                 {
                     decimal probability = decimal.Parse(parts[j].Trim());
                     var distribution = new DayTypeDistribution
@@ -129,6 +157,113 @@ namespace NewspaperSellerModels
 
             return distributions;
         }
+        public Enums.DayType getDayType(int randomNum)
+        {
+            for (int j = 0; j < DayTypeDistributions.Count; j++)
+            {
+                if (DayTypeDistributions[j].MinRange <= randomNum &&
+                    DayTypeDistributions[j].MaxRange >= randomNum)
+                {
+                    return DayTypeDistributions[j].DayType;
 
+                }
+            }
+            return 0;
+        }
+        public int getdemand(int randomNum, Enums.DayType dayType)
+        {
+            for (int j = 0; j < DemandDistributions.Count; j++)
+            {
+
+                if (DemandDistributions[j].DayTypeDistributions[Convert.ToInt16(dayType)].MinRange <= randomNum &&
+                    DemandDistributions[j].DayTypeDistributions[Convert.ToInt16(dayType)].MaxRange >= randomNum)
+                {
+                    return DemandDistributions[j].Demand;
+
+                }
+            }
+            return 0;
+        }
+        public void calcCummProb(ref List<DayTypeDistribution> timeDistributions)
+        {
+            decimal total = 0;
+            foreach (DayTypeDistribution time in timeDistributions)
+            {
+                time.MinRange = Convert.ToInt32((total * 100) + 1);
+                total += time.Probability;
+                time.CummProbability = total;
+                time.MaxRange = Convert.ToInt32(time.CummProbability * 100);
+            }
+
+        }
+        public void calcCummProb(List<DayTypeDistribution> timeDistributions)
+        {
+            decimal total = 0;
+            foreach (DayTypeDistribution time in timeDistributions)
+            {
+                time.MinRange = Convert.ToInt32((total * 100) + 1);
+                total += time.Probability;
+                time.CummProbability = total;
+                time.MaxRange = Convert.ToInt32(time.CummProbability * 100);
+            }
+
+        }
+        public decimal calcTotalCost()
+        {
+            decimal cost;
+
+            cost = NumOfNewspapers * PurchasePrice;
+            PerformanceMeasures.TotalCost += cost;
+            return cost;
+
+        }
+        public decimal calcTotalLostProfit(int demand)
+        {
+
+            decimal profit = demand - NumOfNewspapers * (SellingPrice - PurchasePrice);
+
+            PerformanceMeasures.TotalLostProfit += profit;
+            return profit;
+        }
+        public decimal calcTotalScrapProfit(int demand)
+        {
+            decimal ScrapProfit;
+            ScrapProfit = (NumOfNewspapers - demand) * ScrapPrice;
+            PerformanceMeasures.TotalScrapProfit += ScrapProfit;
+            return ScrapProfit;
+
+        }
+        public decimal calcTotalSalesProfit(int Demand)
+        {
+            decimal SalesProfit;
+            decimal check;
+            check = Math.Min(NumOfNewspapers, Demand);
+            SalesProfit = check * SellingPrice;
+            PerformanceMeasures.TotalSalesProfit += SalesProfit;
+            return SalesProfit;
+
+        }
+        public void calcTotalNetProfit()
+        {
+
+            PerformanceMeasures.TotalNetProfit = PerformanceMeasures.TotalSalesProfit - PerformanceMeasures.TotalCost - PerformanceMeasures.TotalLostProfit + PerformanceMeasures.TotalScrapProfit;
+        }
+        public void calcDaysWithMoreDemand()
+        {
+
+            PerformanceMeasures.DaysWithMoreDemand++;
+
+        }
+        public void calcDaysWithUnsoldPapers()
+        {
+
+
+            PerformanceMeasures.DaysWithUnsoldPapers++;
+
+        }
+        public decimal calcDalyProfit(decimal dailyCost, decimal salesProfit, decimal lostProfit, decimal scrapProfit)
+        {
+            return salesProfit - dailyCost - lostProfit + scrapProfit;
+        }
     }
 }

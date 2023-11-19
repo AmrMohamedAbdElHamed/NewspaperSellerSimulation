@@ -17,7 +17,6 @@ namespace NewspaperSellerSimulation
         static void Main()
         {
             SimulationSystem simulationSystem = new SimulationSystem();
-            simulationSystem.ReadAndSplitSections("D:/computerSciences/Smaster7/Modling&Sumoltion/Task2/NewspaperSellerSimulation_Students/NewspaperSellerSimulation/TestCases/TestCase1.txt");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
