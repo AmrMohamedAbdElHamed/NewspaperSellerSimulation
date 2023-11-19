@@ -45,7 +45,6 @@ namespace NewspaperSellerModels
                 simulationCase.Demand = getdemand(simulationCase.RandomDemand, simulationCase.NewsDayType);
                 simulationCase.SalesProfit = calcTotalSalesProfit(simulationCase.Demand);
                 simulationCase.DailyCost = calcTotalCost();
-
                 if (simulationCase.Demand > NumOfNewspapers)
                 {
                     simulationCase.LostProfit = calcTotalLostProfit(simulationCase.Demand);

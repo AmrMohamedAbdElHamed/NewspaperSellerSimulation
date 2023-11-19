@@ -7,16 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MultiQueueModels;
-using MultiQueueTesting;
+using NewspaperSellerModels;
 
-namespace MultiQueueSimulation
+
+namespace NewspaperSellerSimulation
 {
     public partial class Form1 : Form
     {
         Form2 form2;
         SimulationSystem system;
-        Form3 form3;
         Form4 form4;
 
 
