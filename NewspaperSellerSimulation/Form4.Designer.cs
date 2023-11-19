@@ -1,4 +1,4 @@
-﻿namespace MultiQueueSimulation
+﻿namespace NewspaperSellerSimulation
 {
     partial class Form4
     {

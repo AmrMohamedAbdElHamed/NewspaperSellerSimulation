@@ -16,6 +16,9 @@ namespace NewspaperSellerSimulation
         [STAThread]
         static void Main()
         {
+            SimulationSystem system = new SimulationSystem();
+            string testingResult = TestingManager.Test(system, Constants.FileNames.TestCase1);
+            MessageBox.Show(testingResult);
             SimulationSystem simulationSystem = new SimulationSystem();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
